@@ -23,7 +23,7 @@ async function addProduct(formData: FormData) {
       name,
       description,
       imageUrl,
-      price,
+      price: price * 100,
     },
   });
 
