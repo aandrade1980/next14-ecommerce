@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import FormSubmitButton from "@/components/FormSubmitButton";
-import prisma from "@/lib/db/prisma";
+import prismaBase from "@/lib/db/prisma";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
 export const metadata = {
   title: "Add Product - Flowmazon",
@@ -8,6 +10,12 @@ export const metadata = {
 
 async function addProduct(formData: FormData) {
   "use server";
+
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    redirect("/api/auth/signin?callbackUrl=/add-product");
+  }
 
   const name = formData.get("name")?.toString();
   const description = formData.get("description")?.toString();
@@ -18,7 +26,7 @@ async function addProduct(formData: FormData) {
     throw Error("Missing required fields");
   }
 
-  await prisma.product.create({
+  await prismaBase.product.create({
     data: {
       name,
       description,
@@ -30,7 +38,13 @@ async function addProduct(formData: FormData) {
   redirect("/");
 }
 
-export default function AddProductPage() {
+export default async function AddProductPage() {
+  const session = getServerSession(authOptions);
+
+  if (!session) {
+    redirect("/api/auth/signin?callbackUrl=/add-product");
+  }
+
   return (
     <div>
       <h1 className="mb-4 text-lg font-bold">Add Product</h1>

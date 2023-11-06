@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import AddToCartButton from "./AddToCartButton";
 import Image from "next/image";
 import PriceTag from "@/components/PriceTag";
-import prisma from "@/lib/db/prisma";
+import prismaBase from "@/lib/db/prisma";
 import { incrementProductQuantity } from "./actions";
 
 interface ProductDetailsPageProps {
@@ -14,7 +14,7 @@ interface ProductDetailsPageProps {
 }
 
 const getProduct = cache(async (id: string) => {
-  const product = await prisma.product.findUnique({
+  const product = await prismaBase.product.findUnique({
     where: {
       id,
     },
